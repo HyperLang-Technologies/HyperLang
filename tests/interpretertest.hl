@@ -1,0 +1,12 @@
+define var x: int = 10
+define var y: int = 5
+define var name: string = "what is good"
+define var pi: float = 3.14
+define var cool: bool = true
+
+arith add x y
+
+text output "Hello, HyperLang!"
+text output name
+text output pi
+text output cool
