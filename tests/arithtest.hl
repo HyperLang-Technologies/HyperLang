@@ -1,0 +1,4 @@
+arith add 10 5
+arith sub 10 4
+arith mul 6 4
+arith div 100 4
