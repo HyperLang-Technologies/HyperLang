@@ -10,18 +10,14 @@
 - [x] Lists
 - [x] For loops
 - [x] While loops
-
-## Control Flow
-
 - [x] Comparisons
-- [x] `if`
-- [x] `elif`
-- [x] `else`
-
-## Functions
-
+- [x] if, else if, else
 - [x] Functions
-- [x] `return`
+- [x] return
+- [ ] globals
+- [ ] locals
+- [ ] convert (to convert types eg. convert x to float)
+- [ ] add mod function to arith
 
 ## Object-Oriented / Advanced
 
