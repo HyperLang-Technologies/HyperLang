@@ -2,56 +2,65 @@
 
 ## Core Language
 
-* [x] Arithmetic (`arith`)
 * [x] Variables
 * [x] Types
-* [x] Text input/output
 * [x] Comments
-* [x] Lists
-* [x] For loops
-* [x] While loops
-* [x] Comparisons
-* [x] `if`, `else if`, `else`
 * [x] Functions
 * [x] `return`
 * [x] `globals`
 * [x] `locals`
-* [x] Type conversion (`convert`)
-* [x] `mod` function in `arith`
-* [x] `abs` function in `arith`
-* [ ] `int()`
-* [ ] `float()`
-* [ ] `str()`
-* [ ] `bool()`
-* [ ] `len()`
-* [ ] `range()`
+* [x] `if`, `else if`, `else`
+* [x] Comparisons
+* [x] For loops
+* [x] While loops
+* [ ] `break`
+* [ ] `continue`
+* [ ] Error handling
+* [ ] Import/module system
+* [ ] Classes or another advanced feature
+
+## Arithmetic
+
+* [x] Arithmetic (`arith`)
+* [x] `mod` function
+* [x] `abs` function
 * [ ] `max()`
 * [ ] `min()`
 * [ ] `round()`
 * [ ] `sum()`
+
+## Input & Output
+
+* [x] Text input/output
+* [ ] `open()`
+
+## Type Conversion
+
+* [x] Type conversion (`convert`)
+* [ ] `int()`
+* [ ] `float()`
+* [ ] `str()`
+* [ ] `bool()`
+
+## Lists & Collections
+
+* [x] Lists
+* [ ] `len()`
+* [ ] `range()`
 * [ ] `sorted()`
 * [ ] `reversed()`
 * [ ] `enumerate()`
-* [ ] `open()`
-
-## Data & Collections
-
 * [ ] Dictionary support
 * [ ] Sets
 * [ ] Tuples
 * [ ] `zip()`
 * [ ] `map()`
 * [ ] `filter()`
-
-## Language Features
-
-* [ ] Error handling
-* [ ] Import/module system
-* [ ] `break`
-* [ ] `continue`
-* [ ] Additional string operations
 * [ ] Additional list operations
-* [ ] Classes or another advanced feature
+
+## Strings
+
+* [ ] Additional string operations
 
 ## 1.0 Quality
 
