@@ -18,5 +18,6 @@
 - [x] locals
 - [x] convert (to convert types eg. convert x to float)
 - [x] add mod function to arith
+- [x] add abs function to arith
 - [ ] Classes or another advanced feature
 - [ ] TBD
