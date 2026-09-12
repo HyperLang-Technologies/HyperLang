@@ -12,6 +12,7 @@ define var cool: bool = true
 define var my_list: list = "['apple', 'banana', 'cherry']"
 define var list_item: string = ""
 define var list_len: int = 0
+define var loop_flag: bool = true
 
 # --------------------------------
 # Arithmetic Operations
@@ -39,3 +40,19 @@ text output list_item
 # Get the length of my_list (4) into list_len and print it
 list len my_list list_len
 text output list_len
+
+# --------------------------------
+# Loop Operations
+# --------------------------------
+# Test 'loop for' (runs 3 times)
+text output "Testing loop for:"
+loop for 3
+    text output "Looping!"
+endloop
+
+# Test 'loop while' using a boolean variable
+text output "Testing loop while:"
+loop while loop_flag
+    text output "Inside while loop"
+    define var loop_flag: bool = false
+endloop
