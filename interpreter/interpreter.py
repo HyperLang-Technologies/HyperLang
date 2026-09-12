@@ -137,6 +137,10 @@ def arith(operation, a, b):
         if b == 0:
             raise ZeroDivisionError("Cannot divide by zero.")
         return a / b
+    elif operation == "mod":
+        if b == 0:
+            raise ZeroDivisionError("Cannot modulo by zero.")
+        return a % b
     else:
         raise ValueError(f"Unknown arithmetic operation: {operation}")
 
@@ -189,6 +193,55 @@ def interpret(line):
         value = parts[5]
         parsed_value = parse_value(value, variable_type)
         variables[name] = {"type": variable_type, "value": parsed_value}
+
+    # --------------------------------
+    # convert
+    # --------------------------------
+    elif parts[0] == "convert":
+        # Usage: convert <variable> to <type> OR convert <variable> <type>
+        if len(parts) == 4 and parts[2] == "to":
+            var_name = parts[1]
+            target_type = parts[3]
+        elif len(parts) == 3:
+            var_name = parts[1]
+            target_type = parts[2]
+        else:
+            raise SyntaxError("Usage: convert <variable> to <type>")
+
+        if var_name not in variables:
+            raise ValueError(f"Variable '{var_name}' is not defined.")
+        if target_type not in TYPES:
+            raise ValueError(f"Unknown type: {target_type}")
+
+        val = variables[var_name]["value"]
+        
+        try:
+            if target_type == "int":
+                val = int(float(val)) if isinstance(val, (str, float)) else int(val)
+            elif target_type == "float":
+                val = float(val)
+            elif target_type == "string":
+                if isinstance(val, bool):
+                    val = "true" if val else "false"
+                else:
+                    val = str(val)
+            elif target_type == "bool":
+                if isinstance(val, str):
+                    if val.lower() not in ["true", "false"]:
+                        raise ValueError("String must be 'true' or 'false' to convert to bool.")
+                    val = (val.lower() == "true")
+                else:
+                    val = bool(val)
+            elif target_type == "list":
+                if isinstance(val, (str, tuple)):
+                    val = list(val)
+                elif not isinstance(val, list):
+                    val = [val]
+        except Exception as e:
+            raise ValueError(f"Cannot convert '{var_name}' to {target_type}: {e}")
+
+        variables[var_name]["type"] = target_type
+        variables[var_name]["value"] = val
 
     # --------------------------------
     # arith

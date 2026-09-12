@@ -16,8 +16,8 @@
 - [x] return
 - [ ] globals
 - [ ] locals
-- [ ] convert (to convert types eg. convert x to float)
-- [ ] add mod function to arith
+- [x] convert (to convert types eg. convert x to float)
+- [x] add mod function to arith
 
 ## Object-Oriented / Advanced
 
