@@ -1,5 +1,5 @@
 # HyperLang Interpreter
-# Copyleft 🄯 2026 HyperLang Tecnhologies
+# Copyleft 🄯 2026 HyperLang Technologies
 
 import shlex
 
@@ -11,7 +11,8 @@ TYPES = {
     "int": int,
     "float": float,
     "string": str,
-    "bool": bool
+    "bool": bool,
+    "list": list
 }
 
 
@@ -69,6 +70,42 @@ def parse_value(value, expected_type):
             f"Expected 'true' or 'false' for type '{expected_type}'."
         )
 
+    if expected_type == "list":
+        # Strip outer quotes if they exist (allows spaces inside list definitions)
+        if len(value) >= 2 and (
+            (value.startswith('"') and value.endswith('"')) or 
+            (value.startswith("'") and value.endswith("'"))
+        ):
+            value = value[1:-1]
+
+        if len(value) >= 2 and value.startswith("[") and value.endswith("]"):
+            content = value[1:-1].strip()
+            if not content:
+                return []
+            
+            raw_items = [item.strip() for item in content.split(",")]
+            parsed_items = []
+            for item in raw_items:
+                if (item.startswith('"') and item.endswith('"')) or (item.startswith("'") and item.endswith("'")):
+                    parsed_items.append(item[1:-1])
+                elif item.isdigit():
+                    parsed_items.append(int(item))
+                elif item in variables:
+                    parsed_items.append(variables[item]["value"])
+                else:
+                    parsed_items.append(item)
+            return parsed_items
+
+        if value in variables:
+            result = variables[value]["value"]
+            if not isinstance(result, list):
+                raise TypeError(f"Variable '{value}' is not a list.")
+            return list(result)
+
+        raise ValueError(
+            f"Expected a list literal or list variable for type '{expected_type}'."
+        )
+
     if value in variables:
         result = variables[value]["value"]
         actual_type = variables[value]["type"]
@@ -101,9 +138,19 @@ def parse_value(value, expected_type):
 def arith(operation, a, b):
     if a in variables:
         a = variables[a]["value"]
+    else:
+        try:
+            a = float(a) if '.' in str(a) else int(a)
+        except ValueError:
+            pass
 
     if b in variables:
         b = variables[b]["value"]
+    else:
+        try:
+            b = float(b) if '.' in str(b) else int(b)
+        except ValueError:
+            pass
 
     if not isinstance(a, (int, float)) or isinstance(a, bool):
         raise TypeError("Arithmetic requires numbers.")
@@ -133,6 +180,23 @@ def arith(operation, a, b):
 
 
 def interpret(line):
+    parts = shlex.split(line, posix=False)
+
+    if not parts:
+        return
+
+    # --------------------------------
+    # comments
+    # --------------------------------
+    
+    line = line.strip()
+
+    if not line or line.startswith("#"):
+        return
+
+    if "#" in line:
+        line = line.split("#", 1)[0].rstrip()
+
     parts = shlex.split(line, posix=False)
 
     if not parts:
@@ -200,6 +264,97 @@ def interpret(line):
         result = arith(operation, a, b)
 
         print(result)
+
+    # --------------------------------
+    # list
+    # --------------------------------
+
+    elif parts[0] == "list":
+        if len(parts) < 3:
+            raise SyntaxError(
+                "Usage: list <append|get|len> <list_var> [args]"
+            )
+
+        action = parts[1]
+        target_var = parts[2]
+
+        if target_var not in variables:
+            raise ValueError(
+                f"Variable '{target_var}' is not defined."
+            )
+
+        if variables[target_var]["type"] != "list":
+            raise TypeError(
+                f"Variable '{target_var}' is not a list."
+            )
+
+        lst = variables[target_var]["value"]
+
+        if action == "append":
+            if len(parts) != 4:
+                raise SyntaxError(
+                    "Usage: list append <list_var> <value>"
+                )
+            
+            val = parts[3]
+            if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+                val = val[1:-1]
+            elif val in variables:
+                val = variables[val]["value"]
+            elif val.isdigit():
+                val = int(val)
+
+            lst.append(val)
+
+        elif action == "get":
+            if len(parts) != 5:
+                raise SyntaxError(
+                    "Usage: list get <list_var> <index> <dest_var>"
+                )
+            
+            index_str = parts[3]
+            dest_var = parts[4]
+
+            if index_str in variables:
+                index = variables[index_str]["value"]
+            else:
+                try:
+                    index = int(index_str)
+                except ValueError:
+                    raise ValueError(
+                        f"Index '{index_str}' must be an integer."
+                    )
+
+            if dest_var not in variables:
+                raise ValueError(
+                    f"Destination variable '{dest_var}' is not defined."
+                )
+
+            try:
+                variables[dest_var]["value"] = lst[index]
+            except IndexError:
+                raise IndexError(
+                    f"Index {index} out of range for list '{target_var}'."
+                )
+
+        elif action == "len":
+            if len(parts) != 4:
+                raise SyntaxError(
+                    "Usage: list len <list_var> <dest_var>"
+                )
+
+            dest_var = parts[3]
+            if dest_var not in variables:
+                raise ValueError(
+                    f"Destination variable '{dest_var}' is not defined."
+                )
+
+            variables[dest_var]["value"] = len(lst)
+
+        else:
+            raise SyntaxError(
+                f"Unknown list operation: {action}"
+            )
 
     # --------------------------------
     # text
@@ -281,7 +436,8 @@ def run_file(filename):
                 SyntaxError,
                 ValueError,
                 TypeError,
-                ZeroDivisionError
+                ZeroDivisionError,
+                IndexError
             ) as error:
                 print(f"Error on line {line_number}: {error}")
                 raise SystemExit(1)

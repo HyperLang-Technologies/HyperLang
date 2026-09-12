@@ -1,12 +1,41 @@
+# HyperLang Tests
+# Copyleft 🄯 2026 HyperLang Technologies
+
+# --------------------------------
+# Variable Definitions
+# --------------------------------
 define var x: int = 10
 define var y: int = 5
 define var name: string = "what is good"
 define var pi: float = 3.14
 define var cool: bool = true
+define var my_list: list = "['apple', 'banana', 'cherry']"
+define var list_item: string = ""
+define var list_len: int = 0
 
+# --------------------------------
+# Arithmetic Operations
+# --------------------------------
 arith add x y
 
+# --------------------------------
+# Text Output
+# --------------------------------
 text output "Hello, HyperLang!"
 text output name
 text output pi
 text output cool
+
+# --------------------------------
+# List Operations
+# --------------------------------
+# Append a new item to the list
+list append my_list "dragonfruit"
+
+# Get the item at index 1 ("banana") into list_item and print it
+list get my_list 1 list_item
+text output list_item
+
+# Get the length of my_list (4) into list_len and print it
+list len my_list list_len
+text output list_len
