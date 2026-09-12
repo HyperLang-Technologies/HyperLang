@@ -17,7 +17,11 @@ define var loop_flag: bool = true
 # --------------------------------
 # Arithmetic Operations
 # --------------------------------
+text output "Testing addition (10 + 5):"
 arith add x y
+
+text output "Testing modulo (10 mod 3):"
+arith mod x 3
 
 # --------------------------------
 # Text Output
@@ -103,6 +107,26 @@ elseif exactly_fifty
 else
     text output "You cannot afford this right now."
 endif
+
+# --------------------------------
+# Testing Type Conversion (Convert)
+# --------------------------------
+text output "--- Starting type conversion tests ---"
+
+define var str_num: string = "42"
+text output "Converting string '42' to int and adding 8:"
+convert str_num to int
+arith add str_num 8
+
+define var float_val: float = 9.99
+text output "Converting float 9.99 to int:"
+convert float_val to int
+text output float_val
+
+define var bool_val: bool = true
+text output "Converting bool 'true' to string:"
+convert bool_val to string
+text output bool_val
 
 # --------------------------------
 # Testing Return Operations
