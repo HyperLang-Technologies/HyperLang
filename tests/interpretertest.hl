@@ -1,4 +1,4 @@
-# HyperLang Tests
+# HyperLang Test Suite
 # Copyleft 🄯 2026 HyperLang Technologies
 
 # --------------------------------
@@ -56,3 +56,14 @@ loop while loop_flag
     text output "Inside while loop"
     define var loop_flag: bool = false
 endloop
+
+# --------------------------------
+# Function Operations
+# --------------------------------
+text output "Testing functions:"
+func define test_function
+    text output "Running code inside test_function!"
+    arith mul x y
+endfunc
+
+func call test_function

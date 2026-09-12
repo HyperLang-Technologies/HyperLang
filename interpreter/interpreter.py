@@ -5,6 +5,7 @@ import shlex
 import sys
 
 variables = {}
+functions = {}
 
 TYPES = {
     "int": int,
@@ -292,21 +293,55 @@ def interpret(line):
         raise SyntaxError(f"Unknown command: {parts[0]}")
 
 
-def run_block(lines):
-    for line in lines:
-        interpret(line)
-
-
-def run_file(filename):
-    with open(filename, "r", encoding="utf-8") as file:
-        lines = file.readlines()
-
+def execute_lines(lines):
     i = 0
     while i < len(lines):
-        line_number = i + 1
+        # We estimate line numbers dynamically based on iteration for errors
+        line_number = i + 1 
         raw_line = lines[i].strip()
 
-        if raw_line.startswith("loop for ") or raw_line.startswith("loop while "):
+        if not raw_line or raw_line.startswith("#"):
+            i += 1
+            continue
+
+        # Check for function definition
+        if raw_line.startswith("func define "):
+            parts = shlex.split(raw_line, posix=False)
+            if len(parts) != 3:
+                print(f"Error on block evaluation: Usage: func define <func_name>")
+                raise SystemExit(1)
+            
+            func_name = parts[2]
+            body = []
+            i += 1
+            
+            while i < len(lines) and lines[i].strip() != "endfunc":
+                body.append(lines[i])
+                i += 1
+                
+            if i >= len(lines):
+                print(f"Error: Missing 'endfunc' for function block '{func_name}'.")
+                raise SystemExit(1)
+                
+            functions[func_name] = body
+
+        # Check for function call
+        elif raw_line.startswith("func call "):
+            parts = shlex.split(raw_line, posix=False)
+            if len(parts) != 3:
+                print(f"Error on block evaluation: Usage: func call <func_name>")
+                raise SystemExit(1)
+                
+            func_name = parts[2]
+            if func_name not in functions:
+                print(f"Error: Function '{func_name}' is not defined.")
+                raise SystemExit(1)
+                
+            # Execute the function's body
+            execute_lines(functions[func_name])
+
+        # Check for loops
+        elif raw_line.startswith("loop for ") or raw_line.startswith("loop while "):
             parts = shlex.split(raw_line, posix=False)
             loop_type = parts[1]
             condition_val = parts[2]
@@ -318,27 +353,35 @@ def run_file(filename):
                 i += 1
 
             if i >= len(lines):
-                print(f"Error on line {line_number}: Missing 'endloop' for loop block.")
+                print(f"Error: Missing 'endloop' for loop block.")
                 raise SystemExit(1)
 
             try:
                 if loop_type == "for":
                     count = variables[condition_val]["value"] if condition_val in variables else int(condition_val)
                     for _ in range(count):
-                        run_block(body)
+                        execute_lines(body)
                 elif loop_type == "while":
                     while evaluate_condition(condition_val):
-                        run_block(body)
+                        execute_lines(body)
             except (SyntaxError, ValueError, TypeError, ZeroDivisionError, IndexError) as error:
-                print(f"Error executing loop starting at line {line_number}: {error}")
+                print(f"Error executing loop: {error}")
                 raise SystemExit(1)
+                
+        # Standard line interpretation
         else:
             try:
                 interpret(lines[i])
             except (SyntaxError, ValueError, TypeError, ZeroDivisionError, IndexError) as error:
-                print(f"Error on line {line_number}: {error}")
+                print(f"Error processing command: {error}")
                 raise SystemExit(1)
         i += 1
+
+
+def run_file(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    execute_lines(lines)
 
 
 if __name__ == "__main__":
