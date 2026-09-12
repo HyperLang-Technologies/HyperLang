@@ -103,3 +103,24 @@ elseif exactly_fifty
 else
     text output "You cannot afford this right now."
 endif
+
+# --------------------------------
+# Testing Return Operations
+# --------------------------------
+text output "--- Starting return tests ---"
+
+define var do_early_exit: bool = true
+
+func define early_bird
+    text output "Starting the function..."
+    
+    if do_early_exit
+        text output "Exiting early!"
+        return
+    endif
+    
+    text output "You will not see this text because we returned!"
+endfunc
+
+func call early_bird
+text output "Back in main script!"

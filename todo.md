@@ -21,7 +21,7 @@
 ## Functions
 
 - [x] Functions
-- [ ] `return`
+- [x] `return`
 
 ## Object-Oriented / Advanced
 

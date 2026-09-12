@@ -15,6 +15,9 @@ TYPES = {
     "list": list
 }
 
+# Custom exception to handle returning out of deep blocks/loops
+class ReturnException(Exception):
+    pass
 
 def parse_value(value, expected_type):
     if expected_type not in TYPES:
@@ -354,30 +357,33 @@ def execute_lines(lines):
         if not raw_line or raw_line.startswith("#"):
             i += 1
             continue
+            
+        # --------------------------------
+        # return
+        # --------------------------------
+        if raw_line == "return":
+            raise ReturnException()
 
         # --------------------------------
         # if / elseif / else blocks
         # --------------------------------
-        if raw_line.startswith("if "):
+        elif raw_line.startswith("if "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 2:
                 print(f"Error: Usage: if <condition>")
                 raise SystemExit(1)
             
-            # Keep track of all the different branches
             branches = [{"condition": parts[1], "body": []}]
-            depth = 1 # Allows us to properly catch nested blocks if needed later
+            depth = 1 
             i += 1
             
             while i < len(lines):
                 line_str = lines[i].strip()
                 
-                # Check if we are nesting if statements
                 if line_str.startswith("if "):
                     depth += 1
                     branches[-1]["body"].append(lines[i])
                     
-                # Check for block termination
                 elif line_str == "endif":
                     depth -= 1
                     if depth == 0:
@@ -385,7 +391,6 @@ def execute_lines(lines):
                     else:
                         branches[-1]["body"].append(lines[i])
                         
-                # Check for alternative conditions (only at root depth of this block)
                 elif line_str.startswith("elseif ") and depth == 1:
                     parts = shlex.split(line_str, posix=False)
                     if len(parts) != 2:
@@ -393,11 +398,9 @@ def execute_lines(lines):
                         raise SystemExit(1)
                     branches.append({"condition": parts[1], "body": []})
                     
-                # Check for default fallback (only at root depth of this block)
                 elif line_str == "else" and depth == 1:
                     branches.append({"condition": "true", "body": []})
                     
-                # Standard line inside the current branch
                 else:
                     branches[-1]["body"].append(lines[i])
                 i += 1
@@ -406,11 +409,10 @@ def execute_lines(lines):
                 print("Error: Missing 'endif' for if block.")
                 raise SystemExit(1)
                 
-            # Evaluate which branch to execute
             for branch in branches:
                 if evaluate_condition(branch["condition"]):
                     execute_lines(branch["body"])
-                    break # Stop checking other branches once one runs
+                    break 
 
         # --------------------------------
         # func define
@@ -449,7 +451,10 @@ def execute_lines(lines):
                 print(f"Error: Function '{func_name}' is not defined.")
                 raise SystemExit(1)
                 
-            execute_lines(functions[func_name])
+            try:
+                execute_lines(functions[func_name])
+            except ReturnException:
+                pass # Function hit a return statement and exited successfully!
 
         # --------------------------------
         # loop for / loop while
@@ -494,7 +499,10 @@ def execute_lines(lines):
 def run_file(filename):
     with open(filename, "r", encoding="utf-8") as file:
         lines = file.readlines()
-    execute_lines(lines)
+    try:
+        execute_lines(lines)
+    except ReturnException:
+        pass # Allows a return statement in the main file to safely exit the script
 
 
 if __name__ == "__main__":
