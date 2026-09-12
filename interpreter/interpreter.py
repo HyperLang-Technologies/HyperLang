@@ -130,7 +130,7 @@ def parse_value(value, expected_type):
             raise ValueError(f"'{value}' is not a valid float.")
 
 
-def arith(operation, a, b):
+def arith(operation, a, b=None):
     var_a = get_var(a)
     if var_a:
         a = var_a["value"]
@@ -139,6 +139,17 @@ def arith(operation, a, b):
             a = float(a) if '.' in str(a) else int(a)
         except ValueError:
             pass
+
+    if not isinstance(a, (int, float)) or isinstance(a, bool):
+        raise TypeError("Arithmetic requires numbers.")
+
+    # Handle single-operand operations first
+    if operation == "abs": 
+        return abs(a)
+
+    # For everything else, b is required
+    if b is None:
+        raise ValueError(f"Operation '{operation}' requires a second operand.")
 
     var_b = get_var(b)
     if var_b:
@@ -149,8 +160,6 @@ def arith(operation, a, b):
         except ValueError:
             pass
 
-    if not isinstance(a, (int, float)) or isinstance(a, bool):
-        raise TypeError("Arithmetic requires numbers.")
     if not isinstance(b, (int, float)) or isinstance(b, bool):
         raise TypeError("Arithmetic requires numbers.")
 
@@ -252,10 +261,13 @@ def interpret(line):
     # arith
     # --------------------------------
     elif parts[0] == "arith":
-        if len(parts) != 4:
-            raise SyntaxError("Usage: arith <operation> <number> <number>")
-        result = arith(parts[1], parts[2], parts[3])
-        print(result)
+            if len(parts) == 3 and parts[1] == "abs":
+                result = arith(parts[1], parts[2])
+            elif len(parts) == 4 and parts[1] != "abs":
+                result = arith(parts[1], parts[2], parts[3])
+            else:
+                raise SyntaxError("Usage: arith abs <number> OR arith <operation> <number> <number>")
+            print(result)
 
     # --------------------------------
     # compare

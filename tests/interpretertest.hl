@@ -23,6 +23,9 @@ arith add x y
 text output "Testing modulo (10 mod 3):"
 arith mod x 3
 
+text output "Testing abs with -10"
+arith abs -10
+
 # --------------------------------
 # Text Output
 # --------------------------------
