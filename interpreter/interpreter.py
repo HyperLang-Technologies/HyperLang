@@ -4,7 +4,8 @@
 import shlex
 import sys
 
-variables = {}
+# Call stack for variable scoping. Index 0 is global.
+call_stack = [{}]
 functions = {}
 
 TYPES = {
@@ -15,9 +16,32 @@ TYPES = {
     "list": list
 }
 
-# Custom exception to handle returning out of deep blocks/loops
 class ReturnException(Exception):
     pass
+
+# --- Scope Helpers ---
+
+def get_var(name):
+    if name in call_stack[-1]:
+        return call_stack[-1][name]
+    if name in call_stack[0]:
+        return call_stack[0][name]
+    return None
+
+def define_var(name, var_type, value):
+    # Defines a new variable in the current local scope
+    call_stack[-1][name] = {"type": var_type, "value": value}
+
+def update_var(name, var_type, value):
+    # Updates an existing variable (local first, then global)
+    if name in call_stack[-1]:
+        call_stack[-1][name] = {"type": var_type, "value": value}
+    elif name in call_stack[0]:
+        call_stack[0][name] = {"type": var_type, "value": value}
+    else:
+        raise ValueError(f"Variable '{name}' is not defined.")
+
+# ---------------------
 
 def parse_value(value, expected_type):
     if expected_type not in TYPES:
@@ -28,8 +52,9 @@ def parse_value(value, expected_type):
             return value[1:-1]
         if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
             return value[1:-1]
-        if value in variables:
-            result = variables[value]["value"]
+        var_data = get_var(value)
+        if var_data:
+            result = var_data["value"]
             if not isinstance(result, str):
                 raise TypeError(f"Variable '{value}' is not a string.")
             return result
@@ -40,8 +65,9 @@ def parse_value(value, expected_type):
             return True
         if value == "false":
             return False
-        if value in variables:
-            result = variables[value]["value"]
+        var_data = get_var(value)
+        if var_data:
+            result = var_data["value"]
             if not isinstance(result, bool):
                 raise TypeError(f"Variable '{value}' is not a boolean.")
             return result
@@ -66,29 +92,29 @@ def parse_value(value, expected_type):
                     parsed_items.append(item[1:-1])
                 elif item.isdigit():
                     parsed_items.append(int(item))
-                elif item in variables:
-                    parsed_items.append(variables[item]["value"])
                 else:
-                    parsed_items.append(item)
+                    item_data = get_var(item)
+                    if item_data:
+                        parsed_items.append(item_data["value"])
+                    else:
+                        parsed_items.append(item)
             return parsed_items
 
-        if value in variables:
-            result = variables[value]["value"]
+        var_data = get_var(value)
+        if var_data:
+            result = var_data["value"]
             if not isinstance(result, list):
                 raise TypeError(f"Variable '{value}' is not a list.")
             return list(result)
 
-        raise ValueError(
-            f"Expected a list literal or list variable for type '{expected_type}'."
-        )
+        raise ValueError(f"Expected a list literal or list variable for type '{expected_type}'.")
 
-    if value in variables:
-        result = variables[value]["value"]
-        actual_type = variables[value]["type"]
+    var_data = get_var(value)
+    if var_data:
+        result = var_data["value"]
+        actual_type = var_data["type"]
         if actual_type != expected_type:
-            raise TypeError(
-                f"Variable '{value}' is type '{actual_type}', not '{expected_type}'."
-            )
+            raise TypeError(f"Variable '{value}' is type '{actual_type}', not '{expected_type}'.")
         return result
 
     if expected_type == "int":
@@ -105,16 +131,18 @@ def parse_value(value, expected_type):
 
 
 def arith(operation, a, b):
-    if a in variables:
-        a = variables[a]["value"]
+    var_a = get_var(a)
+    if var_a:
+        a = var_a["value"]
     else:
         try:
             a = float(a) if '.' in str(a) else int(a)
         except ValueError:
             pass
 
-    if b in variables:
-        b = variables[b]["value"]
+    var_b = get_var(b)
+    if var_b:
+        b = var_b["value"]
     else:
         try:
             b = float(b) if '.' in str(b) else int(b)
@@ -123,23 +151,17 @@ def arith(operation, a, b):
 
     if not isinstance(a, (int, float)) or isinstance(a, bool):
         raise TypeError("Arithmetic requires numbers.")
-
     if not isinstance(b, (int, float)) or isinstance(b, bool):
         raise TypeError("Arithmetic requires numbers.")
 
-    if operation == "add":
-        return a + b
-    elif operation == "sub":
-        return a - b
-    elif operation == "mul":
-        return a * b
+    if operation == "add": return a + b
+    elif operation == "sub": return a - b
+    elif operation == "mul": return a * b
     elif operation == "div":
-        if b == 0:
-            raise ZeroDivisionError("Cannot divide by zero.")
+        if b == 0: raise ZeroDivisionError("Cannot divide by zero.")
         return a / b
     elif operation == "mod":
-        if b == 0:
-            raise ZeroDivisionError("Cannot modulo by zero.")
+        if b == 0: raise ZeroDivisionError("Cannot modulo by zero.")
         return a % b
     else:
         raise ValueError(f"Unknown arithmetic operation: {operation}")
@@ -147,13 +169,11 @@ def arith(operation, a, b):
 
 def evaluate_condition(cond_str):
     cond_str = cond_str.strip()
-    if cond_str == "true":
-        return True
-    if cond_str == "false":
-        return False
-    if cond_str in variables:
-        val = variables[cond_str]["value"]
-        return bool(val)
+    if cond_str == "true": return True
+    if cond_str == "false": return False
+    var_data = get_var(cond_str)
+    if var_data:
+        return bool(var_data["value"])
     return False
 
 
@@ -173,47 +193,36 @@ def interpret(line):
     # define var
     # --------------------------------
     if parts[0] == "define":
-        if len(parts) != 6:
+        if len(parts) != 6 or parts[1] != "var" or not parts[2].endswith(":") or parts[4] != "=":
             raise SyntaxError("Usage: define var <name>: <type> = <value>")
-        if parts[1] != "var":
-            raise SyntaxError("Expected 'var' after 'define'.")
-
-        name = parts[2]
-        if not name.endswith(":"):
-            raise SyntaxError("Expected ':' after the variable name.")
-        name = name[:-1]
-
+        
+        name = parts[2][:-1]
         variable_type = parts[3]
         if variable_type not in TYPES:
             raise ValueError(f"Unknown type: {variable_type}")
 
-        if parts[4] != "=":
-            raise SyntaxError("Expected '=' after the variable type.")
-
         value = parts[5]
         parsed_value = parse_value(value, variable_type)
-        variables[name] = {"type": variable_type, "value": parsed_value}
+        define_var(name, variable_type, parsed_value)
 
     # --------------------------------
     # convert
     # --------------------------------
     elif parts[0] == "convert":
-        # Usage: convert <variable> to <type> OR convert <variable> <type>
         if len(parts) == 4 and parts[2] == "to":
-            var_name = parts[1]
-            target_type = parts[3]
+            var_name, target_type = parts[1], parts[3]
         elif len(parts) == 3:
-            var_name = parts[1]
-            target_type = parts[2]
+            var_name, target_type = parts[1], parts[2]
         else:
             raise SyntaxError("Usage: convert <variable> to <type>")
 
-        if var_name not in variables:
+        var_data = get_var(var_name)
+        if not var_data:
             raise ValueError(f"Variable '{var_name}' is not defined.")
         if target_type not in TYPES:
             raise ValueError(f"Unknown type: {target_type}")
 
-        val = variables[var_name]["value"]
+        val = var_data["value"]
         
         try:
             if target_type == "int":
@@ -221,10 +230,7 @@ def interpret(line):
             elif target_type == "float":
                 val = float(val)
             elif target_type == "string":
-                if isinstance(val, bool):
-                    val = "true" if val else "false"
-                else:
-                    val = str(val)
+                val = "true" if val is True else "false" if val is False else str(val)
             elif target_type == "bool":
                 if isinstance(val, str):
                     if val.lower() not in ["true", "false"]:
@@ -240,8 +246,7 @@ def interpret(line):
         except Exception as e:
             raise ValueError(f"Cannot convert '{var_name}' to {target_type}: {e}")
 
-        variables[var_name]["type"] = target_type
-        variables[var_name]["value"] = val
+        update_var(var_name, target_type, val)
 
     # --------------------------------
     # arith
@@ -259,50 +264,34 @@ def interpret(line):
         if len(parts) != 5:
             raise SyntaxError("Usage: compare <val1> <op> <val2> <dest_bool_var>")
         
-        v1_str = parts[1]
-        op = parts[2]
-        v2_str = parts[3]
-        dest_var = parts[4]
+        v1_str, op, v2_str, dest_var = parts[1], parts[2], parts[3], parts[4]
 
-        # Resolve v1
-        if v1_str in variables:
-            v1 = variables[v1_str]["value"]
+        var_v1 = get_var(v1_str)
+        if var_v1:
+            v1 = var_v1["value"]
         else:
-            try:
-                v1 = float(v1_str) if '.' in v1_str else int(v1_str)
-            except ValueError:
-                v1 = v1_str.strip("\"'") # Handle strings
+            try: v1 = float(v1_str) if '.' in v1_str else int(v1_str)
+            except ValueError: v1 = v1_str.strip("\"'")
 
-        # Resolve v2
-        if v2_str in variables:
-            v2 = variables[v2_str]["value"]
+        var_v2 = get_var(v2_str)
+        if var_v2:
+            v2 = var_v2["value"]
         else:
-            try:
-                v2 = float(v2_str) if '.' in v2_str else int(v2_str)
-            except ValueError:
-                v2 = v2_str.strip("\"'") # Handle strings
+            try: v2 = float(v2_str) if '.' in v2_str else int(v2_str)
+            except ValueError: v2 = v2_str.strip("\"'")
 
-        if dest_var not in variables:
+        dest_data = get_var(dest_var)
+        if not dest_data:
             raise ValueError(f"Destination variable '{dest_var}' is not defined.")
-        if variables[dest_var]["type"] != "bool":
+        if dest_data["type"] != "bool":
             raise TypeError(f"Destination variable '{dest_var}' must be a bool.")
 
-        if op == "==":
-            res = (v1 == v2)
-        elif op == "!=":
-            res = (v1 != v2)
-        elif op == "<":
-            res = (v1 < v2)
-        elif op == ">":
-            res = (v1 > v2)
-        elif op == "<=":
-            res = (v1 <= v2)
-        elif op == ">=":
-            res = (v1 >= v2)
-        else:
+        ops = {"==": lambda a,b: a==b, "!=": lambda a,b: a!=b, "<": lambda a,b: a<b,
+               ">": lambda a,b: a>b, "<=": lambda a,b: a<=b, ">=": lambda a,b: a>=b}
+        if op not in ops:
             raise SyntaxError(f"Unknown comparison operator: {op}")
-
-        variables[dest_var]["value"] = res
+        
+        update_var(dest_var, "bool", ops[op](v1, v2))
 
     # --------------------------------
     # list
@@ -311,15 +300,15 @@ def interpret(line):
         if len(parts) < 3:
             raise SyntaxError("Usage: list <append|get|len> <list_var> [args]")
 
-        action = parts[1]
-        target_var = parts[2]
-
-        if target_var not in variables:
+        action, target_var = parts[1], parts[2]
+        var_data = get_var(target_var)
+        
+        if not var_data:
             raise ValueError(f"Variable '{target_var}' is not defined.")
-        if variables[target_var]["type"] != "list":
+        if var_data["type"] != "list":
             raise TypeError(f"Variable '{target_var}' is not a list.")
 
-        lst = variables[target_var]["value"]
+        lst = var_data["value"]
 
         if action == "append":
             if len(parts) != 4:
@@ -327,31 +316,29 @@ def interpret(line):
             val = parts[3]
             if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
                 val = val[1:-1]
-            elif val in variables:
-                val = variables[val]["value"]
-            elif val.isdigit():
-                val = int(val)
+            else:
+                val_data = get_var(val)
+                if val_data: val = val_data["value"]
+                elif val.isdigit(): val = int(val)
             lst.append(val)
 
         elif action == "get":
             if len(parts) != 5:
                 raise SyntaxError("Usage: list get <list_var> <index> <dest_var>")
-            index_str = parts[3]
-            dest_var = parts[4]
+            index_str, dest_var = parts[3], parts[4]
 
-            if index_str in variables:
-                index = variables[index_str]["value"]
+            idx_data = get_var(index_str)
+            if idx_data: index = idx_data["value"]
             else:
-                try:
-                    index = int(index_str)
-                except ValueError:
-                    raise ValueError(f"Index '{index_str}' must be an integer.")
+                try: index = int(index_str)
+                except ValueError: raise ValueError(f"Index '{index_str}' must be an integer.")
 
-            if dest_var not in variables:
+            if not get_var(dest_var):
                 raise ValueError(f"Destination variable '{dest_var}' is not defined.")
 
             try:
-                variables[dest_var]["value"] = lst[index]
+                # Update existing variable type implicitly or assume string for simplicity in basic tests
+                update_var(dest_var, get_var(dest_var)["type"], lst[index])
             except IndexError:
                 raise IndexError(f"Index {index} out of range for list '{target_var}'.")
 
@@ -359,9 +346,9 @@ def interpret(line):
             if len(parts) != 4:
                 raise SyntaxError("Usage: list len <list_var> <dest_var>")
             dest_var = parts[3]
-            if dest_var not in variables:
+            if not get_var(dest_var):
                 raise ValueError(f"Destination variable '{dest_var}' is not defined.")
-            variables[dest_var]["value"] = len(lst)
+            update_var(dest_var, "int", len(lst))
 
         else:
             raise SyntaxError(f"Unknown list operation: {action}")
@@ -379,21 +366,24 @@ def interpret(line):
             if (len(value) >= 2 and value[0] == '"' and value[-1] == '"') or \
                (len(value) >= 2 and value[0] == "'" and value[-1] == "'"):
                 value = value[1:-1]
-            elif value in variables:
-                value = variables[value]["value"]
             else:
-                raise ValueError(f"Variable '{value}' is not defined.")
+                var_data = get_var(value)
+                if var_data:
+                    value = var_data["value"]
+                else:
+                    raise ValueError(f"Variable '{value}' is not defined.")
             print(value)
 
         elif action == "input":
             if len(parts) != 3:
                 raise SyntaxError("Usage: text input <variable>")
             name = parts[2]
-            if name not in variables:
+            var_data = get_var(name)
+            if not var_data:
                 raise ValueError(f"Variable '{name}' is not defined.")
-            if variables[name]["type"] != "string":
+            if var_data["type"] != "string":
                 raise TypeError(f"Variable '{name}' must be a string for text input.")
-            variables[name]["value"] = input()
+            update_var(name, "string", input())
         else:
             raise SyntaxError(f"Unknown text operation: {action}")
 
@@ -404,22 +394,15 @@ def interpret(line):
 def execute_lines(lines):
     i = 0
     while i < len(lines):
-        line_number = i + 1 
         raw_line = lines[i].strip()
 
         if not raw_line or raw_line.startswith("#"):
             i += 1
             continue
             
-        # --------------------------------
-        # return
-        # --------------------------------
         if raw_line == "return":
             raise ReturnException()
 
-        # --------------------------------
-        # if / elseif / else blocks
-        # --------------------------------
         elif raw_line.startswith("if "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 2:
@@ -432,28 +415,21 @@ def execute_lines(lines):
             
             while i < len(lines):
                 line_str = lines[i].strip()
-                
                 if line_str.startswith("if "):
                     depth += 1
                     branches[-1]["body"].append(lines[i])
-                    
                 elif line_str == "endif":
                     depth -= 1
-                    if depth == 0:
-                        break
-                    else:
-                        branches[-1]["body"].append(lines[i])
-                        
+                    if depth == 0: break
+                    else: branches[-1]["body"].append(lines[i])
                 elif line_str.startswith("elseif ") and depth == 1:
                     parts = shlex.split(line_str, posix=False)
                     if len(parts) != 2:
                         print(f"Error: Usage: elseif <condition>")
                         raise SystemExit(1)
                     branches.append({"condition": parts[1], "body": []})
-                    
                 elif line_str == "else" and depth == 1:
                     branches.append({"condition": "true", "body": []})
-                    
                 else:
                     branches[-1]["body"].append(lines[i])
                 i += 1
@@ -467,9 +443,6 @@ def execute_lines(lines):
                     execute_lines(branch["body"])
                     break 
 
-        # --------------------------------
-        # func define
-        # --------------------------------
         elif raw_line.startswith("func define "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 3:
@@ -490,9 +463,6 @@ def execute_lines(lines):
                 
             functions[func_name] = body
 
-        # --------------------------------
-        # func call
-        # --------------------------------
         elif raw_line.startswith("func call "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 3:
@@ -504,14 +474,16 @@ def execute_lines(lines):
                 print(f"Error: Function '{func_name}' is not defined.")
                 raise SystemExit(1)
                 
+            # Push a new local scope
+            call_stack.append({})
             try:
                 execute_lines(functions[func_name])
             except ReturnException:
-                pass # Function hit a return statement and exited successfully!
+                pass
+            finally:
+                # Pop the local scope when done
+                call_stack.pop()
 
-        # --------------------------------
-        # loop for / loop while
-        # --------------------------------
         elif raw_line.startswith("loop for ") or raw_line.startswith("loop while "):
             parts = shlex.split(raw_line, posix=False)
             loop_type = parts[1]
@@ -529,7 +501,8 @@ def execute_lines(lines):
 
             try:
                 if loop_type == "for":
-                    count = variables[condition_val]["value"] if condition_val in variables else int(condition_val)
+                    cond_data = get_var(condition_val)
+                    count = cond_data["value"] if cond_data else int(condition_val)
                     for _ in range(count):
                         execute_lines(body)
                 elif loop_type == "while":
@@ -539,7 +512,6 @@ def execute_lines(lines):
                 print(f"Error executing loop: {error}")
                 raise SystemExit(1)
                 
-        # Standard line interpretation
         else:
             try:
                 interpret(lines[i])
@@ -548,15 +520,13 @@ def execute_lines(lines):
                 raise SystemExit(1)
         i += 1
 
-
 def run_file(filename):
     with open(filename, "r", encoding="utf-8") as file:
         lines = file.readlines()
     try:
         execute_lines(lines)
     except ReturnException:
-        pass # Allows a return statement in the main file to safely exit the script
-
+        pass 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

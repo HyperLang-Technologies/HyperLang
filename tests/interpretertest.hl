@@ -148,3 +148,25 @@ endfunc
 
 func call early_bird
 text output "Back in main script!"
+
+# --------------------------------
+# Testing Global and Local Scope
+# --------------------------------
+text output "--- Starting scope tests ---"
+
+define var scope_test_var: int = 100
+
+func define scope_tester
+    text output "Inside function, creating local variable with same name..."
+    define var scope_test_var: int = 500
+    text output "Local scope_test_var is:"
+    text output scope_test_var
+endfunc
+
+text output "Global scope_test_var before function:"
+text output scope_test_var
+
+func call scope_tester
+
+text output "Global scope_test_var after function (should still be 100):"
+text output scope_test_var

@@ -14,8 +14,8 @@
 - [x] if, else if, else
 - [x] Functions
 - [x] return
-- [ ] globals
-- [ ] locals
+- [x] globals
+- [x] locals
 - [x] convert (to convert types eg. convert x to float)
 - [x] add mod function to arith
 
