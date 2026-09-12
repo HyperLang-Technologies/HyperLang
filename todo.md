@@ -13,7 +13,7 @@
 
 ## Control Flow
 
-- [ ] Comparisons
+- [x] Comparisons
 - [ ] `if`
 - [ ] `elif`
 - [ ] `else`

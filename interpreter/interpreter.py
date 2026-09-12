@@ -197,6 +197,58 @@ def interpret(line):
         print(result)
 
     # --------------------------------
+    # compare
+    # --------------------------------
+    elif parts[0] == "compare":
+        if len(parts) != 5:
+            raise SyntaxError("Usage: compare <val1> <op> <val2> <dest_bool_var>")
+        
+        v1_str = parts[1]
+        op = parts[2]
+        v2_str = parts[3]
+        dest_var = parts[4]
+
+        # Resolve v1
+        if v1_str in variables:
+            v1 = variables[v1_str]["value"]
+        else:
+            try:
+                v1 = float(v1_str) if '.' in v1_str else int(v1_str)
+            except ValueError:
+                v1 = v1_str.strip("\"'") # Handle strings
+
+        # Resolve v2
+        if v2_str in variables:
+            v2 = variables[v2_str]["value"]
+        else:
+            try:
+                v2 = float(v2_str) if '.' in v2_str else int(v2_str)
+            except ValueError:
+                v2 = v2_str.strip("\"'") # Handle strings
+
+        if dest_var not in variables:
+            raise ValueError(f"Destination variable '{dest_var}' is not defined.")
+        if variables[dest_var]["type"] != "bool":
+            raise TypeError(f"Destination variable '{dest_var}' must be a bool.")
+
+        if op == "==":
+            res = (v1 == v2)
+        elif op == "!=":
+            res = (v1 != v2)
+        elif op == "<":
+            res = (v1 < v2)
+        elif op == ">":
+            res = (v1 > v2)
+        elif op == "<=":
+            res = (v1 <= v2)
+        elif op == ">=":
+            res = (v1 >= v2)
+        else:
+            raise SyntaxError(f"Unknown comparison operator: {op}")
+
+        variables[dest_var]["value"] = res
+
+    # --------------------------------
     # list
     # --------------------------------
     elif parts[0] == "list":

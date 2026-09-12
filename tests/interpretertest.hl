@@ -67,3 +67,18 @@ func define test_function
 endfunc
 
 func call test_function
+
+# --------------------------------
+# Compare Operations
+# --------------------------------
+text output "Testing comparisons:"
+define var a: int = 10
+define var b: int = 20
+define var is_less: bool = false
+
+# Check if a is less than b, and store the result in is_less
+compare a < b is_less
+
+# This should output True
+text output "Is 10 < 20?"
+text output is_less
