@@ -14,9 +14,9 @@
 ## Control Flow
 
 - [x] Comparisons
-- [ ] `if`
-- [ ] `elif`
-- [ ] `else`
+- [x] `if`
+- [x] `elif`
+- [x] `else`
 
 ## Functions
 

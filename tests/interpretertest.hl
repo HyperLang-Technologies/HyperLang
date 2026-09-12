@@ -1,4 +1,4 @@
-# HyperLang Test Suite
+# HyperLang Tests
 # Copyleft 🄯 2026 HyperLang Technologies
 
 # --------------------------------
@@ -82,3 +82,24 @@ compare a < b is_less
 # This should output True
 text output "Is 10 < 20?"
 text output is_less
+
+# --------------------------------
+# Testing If / Else Blocks
+# --------------------------------
+text output "--- Starting conditional block tests ---"
+
+define var money: int = 50
+define var item_cost: int = 100
+define var can_afford: bool = false
+define var exactly_fifty: bool = false
+
+compare money >= item_cost can_afford
+compare money == 50 exactly_fifty
+
+if can_afford
+    text output "You bought the item!"
+elseif exactly_fifty
+    text output "You have exactly 50 dollars, saving it up."
+else
+    text output "You cannot afford this right now."
+endif

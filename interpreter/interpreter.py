@@ -348,7 +348,6 @@ def interpret(line):
 def execute_lines(lines):
     i = 0
     while i < len(lines):
-        # We estimate line numbers dynamically based on iteration for errors
         line_number = i + 1 
         raw_line = lines[i].strip()
 
@@ -356,8 +355,67 @@ def execute_lines(lines):
             i += 1
             continue
 
-        # Check for function definition
-        if raw_line.startswith("func define "):
+        # --------------------------------
+        # if / elseif / else blocks
+        # --------------------------------
+        if raw_line.startswith("if "):
+            parts = shlex.split(raw_line, posix=False)
+            if len(parts) != 2:
+                print(f"Error: Usage: if <condition>")
+                raise SystemExit(1)
+            
+            # Keep track of all the different branches
+            branches = [{"condition": parts[1], "body": []}]
+            depth = 1 # Allows us to properly catch nested blocks if needed later
+            i += 1
+            
+            while i < len(lines):
+                line_str = lines[i].strip()
+                
+                # Check if we are nesting if statements
+                if line_str.startswith("if "):
+                    depth += 1
+                    branches[-1]["body"].append(lines[i])
+                    
+                # Check for block termination
+                elif line_str == "endif":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                    else:
+                        branches[-1]["body"].append(lines[i])
+                        
+                # Check for alternative conditions (only at root depth of this block)
+                elif line_str.startswith("elseif ") and depth == 1:
+                    parts = shlex.split(line_str, posix=False)
+                    if len(parts) != 2:
+                        print(f"Error: Usage: elseif <condition>")
+                        raise SystemExit(1)
+                    branches.append({"condition": parts[1], "body": []})
+                    
+                # Check for default fallback (only at root depth of this block)
+                elif line_str == "else" and depth == 1:
+                    branches.append({"condition": "true", "body": []})
+                    
+                # Standard line inside the current branch
+                else:
+                    branches[-1]["body"].append(lines[i])
+                i += 1
+                
+            if depth > 0:
+                print("Error: Missing 'endif' for if block.")
+                raise SystemExit(1)
+                
+            # Evaluate which branch to execute
+            for branch in branches:
+                if evaluate_condition(branch["condition"]):
+                    execute_lines(branch["body"])
+                    break # Stop checking other branches once one runs
+
+        # --------------------------------
+        # func define
+        # --------------------------------
+        elif raw_line.startswith("func define "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 3:
                 print(f"Error on block evaluation: Usage: func define <func_name>")
@@ -377,7 +435,9 @@ def execute_lines(lines):
                 
             functions[func_name] = body
 
-        # Check for function call
+        # --------------------------------
+        # func call
+        # --------------------------------
         elif raw_line.startswith("func call "):
             parts = shlex.split(raw_line, posix=False)
             if len(parts) != 3:
@@ -389,10 +449,11 @@ def execute_lines(lines):
                 print(f"Error: Function '{func_name}' is not defined.")
                 raise SystemExit(1)
                 
-            # Execute the function's body
             execute_lines(functions[func_name])
 
-        # Check for loops
+        # --------------------------------
+        # loop for / loop while
+        # --------------------------------
         elif raw_line.startswith("loop for ") or raw_line.startswith("loop while "):
             parts = shlex.split(raw_line, posix=False)
             loop_type = parts[1]
