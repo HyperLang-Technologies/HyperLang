@@ -3,6 +3,7 @@
 
 import shlex
 import sys
+import time  # <-- Added for the 'wait' command
 
 # Call stack for variable scoping. Index 0 is global.
 call_stack = [{}]
@@ -16,8 +17,10 @@ TYPES = {
     "list": list
 }
 
-class ReturnException(Exception):
-    pass
+# --- Control Flow Exceptions ---
+class ReturnException(Exception): pass
+class BreakException(Exception): pass     # <-- Added for 'break'
+class ContinueException(Exception): pass  # <-- Added for 'continue'
 
 # --- Scope Helpers ---
 
@@ -147,7 +150,6 @@ def arith(operation, a, b=None):
         except ValueError:
             pass
 
-    # Handle operations that operate on a single list first
     if is_list_a:
         if operation == "sum":
             return sum(a)
@@ -158,17 +160,14 @@ def arith(operation, a, b=None):
         else:
             raise TypeError(f"Operation '{operation}' does not support list arguments.")
 
-    # Now we know 'a' must be a number
     if not isinstance(a, (int, float)) or isinstance(a, bool):
         raise TypeError(f"Arithmetic requires numbers. Got '{a}' instead.")
 
-    # Single-operand numeric operations
     if operation == "abs": 
         return abs(a)
     elif operation == "round":
         return round(a)
 
-    # For everything else, a second operand (b) is required
     if b is None:
         raise ValueError(f"Operation '{operation}' requires a second operand.")
 
@@ -184,7 +183,6 @@ def arith(operation, a, b=None):
     if not isinstance(b, (int, float)) or isinstance(b, bool):
         raise TypeError("Arithmetic requires numbers.")
 
-    # Two-operand numeric operations
     if operation == "add": return a + b
     elif operation == "sub": return a - b
     elif operation == "mul": return a * b
@@ -287,7 +285,6 @@ def interpret(line):
     elif parts[0] == "arith":
         single_ops = ["abs", "round", "sum"]
         
-        # 'max' and 'min' can take 1 argument (a list) or 2 arguments (two numbers)
         if len(parts) == 3 and parts[1] in single_ops + ["max", "min"]:
             result = arith(parts[1], parts[2])
         elif len(parts) == 4 and parts[1] not in single_ops:
@@ -377,7 +374,6 @@ def interpret(line):
                 raise ValueError(f"Destination variable '{dest_var}' is not defined.")
 
             try:
-                # Update existing variable type implicitly or assume string for simplicity in basic tests
                 update_var(dest_var, get_var(dest_var)["type"], lst[index])
             except IndexError:
                 raise IndexError(f"Index {index} out of range for list '{target_var}'.")
@@ -427,6 +423,25 @@ def interpret(line):
         else:
             raise SyntaxError(f"Unknown text operation: {action}")
 
+    # --------------------------------
+    # wait
+    # --------------------------------
+    elif parts[0] == "wait":
+        if len(parts) != 2:
+            raise SyntaxError("Usage: wait <seconds>")
+        
+        sec_str = parts[1]
+        var_sec = get_var(sec_str)
+        if var_sec:
+            sec = var_sec["value"]
+        else:
+            try:
+                sec = float(sec_str)
+            except ValueError:
+                raise ValueError(f"Invalid wait time: {sec_str}")
+        
+        time.sleep(sec)
+
     else:
         raise SyntaxError(f"Unknown command: {parts[0]}")
 
@@ -442,6 +457,10 @@ def execute_lines(lines):
             
         if raw_line == "return":
             raise ReturnException()
+        elif raw_line == "break":     # <-- Added Break
+            raise BreakException()
+        elif raw_line == "continue":  # <-- Added Continue
+            raise ContinueException()
 
         elif raw_line.startswith("if "):
             parts = shlex.split(raw_line, posix=False)
@@ -544,10 +563,20 @@ def execute_lines(lines):
                     cond_data = get_var(condition_val)
                     count = cond_data["value"] if cond_data else int(condition_val)
                     for _ in range(count):
-                        execute_lines(body)
+                        try:
+                            execute_lines(body)
+                        except ContinueException:
+                            continue  # Skips to next iteration
+                        except BreakException:
+                            break     # Breaks the loop
                 elif loop_type == "while":
                     while evaluate_condition(condition_val):
-                        execute_lines(body)
+                        try:
+                            execute_lines(body)
+                        except ContinueException:
+                            continue
+                        except BreakException:
+                            break
             except (SyntaxError, ValueError, TypeError, ZeroDivisionError, IndexError) as error:
                 print(f"Error executing loop: {error}")
                 raise SystemExit(1)

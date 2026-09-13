@@ -192,3 +192,39 @@ func call scope_tester
 
 text output "Global scope_test_var after function (should still be 100):"
 text output scope_test_var
+
+
+# --------------------------------
+# Testing Wait, Break, and Continue
+# --------------------------------
+text output "--- Starting control flow tests ---"
+
+text output "Testing wait... pausing for 2 seconds."
+wait 2
+text output "Done waiting!"
+
+text output "Testing continue:"
+define var skip_it: bool = true
+
+loop for 4
+    if skip_it
+        text output " -> Skipping this iteration..."
+        define var skip_it: bool = false
+        continue
+        text output "ERROR: This continue line should never print!"
+    endif
+    
+    text output " -> Executing full iteration!"
+    define var skip_it: bool = true
+endloop
+
+text output "Testing break:"
+define var infinite: bool = true
+
+loop while infinite
+    text output " -> Inside the while loop. Breaking out immediately!"
+    break
+    text output "ERROR: This break line should never print!"
+endloop
+
+text output "Successfully escaped the loop!"

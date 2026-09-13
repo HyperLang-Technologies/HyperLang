@@ -13,8 +13,9 @@
 * [x] Comparisons
 * [x] For loops
 * [x] While loops
-* [ ] `break`
-* [ ] `continue`
+* [x] Wait
+* [x] `break`
+* [x] `continue`
 
 ## Arithmetic
 
