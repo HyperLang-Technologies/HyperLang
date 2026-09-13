@@ -15,9 +15,6 @@
 * [x] While loops
 * [ ] `break`
 * [ ] `continue`
-* [ ] Error handling
-* [ ] Import/module system
-* [ ] Classes or another advanced feature
 
 ## Arithmetic
 
@@ -32,35 +29,14 @@
 ## Input & Output
 
 * [x] Text input/output
-* [ ] `open()`
 
 ## Type Conversion
 
 * [x] Type conversion (`convert`)
-* [ ] `int()`
-* [ ] `float()`
-* [ ] `str()`
-* [ ] `bool()`
 
 ## Lists & Collections
 
 * [x] Lists
-* [ ] `len()`
-* [ ] `range()`
-* [ ] `sorted()`
-* [ ] `reversed()`
-* [ ] `enumerate()`
-* [ ] Dictionary support
-* [ ] Sets
-* [ ] Tuples
-* [ ] `zip()`
-* [ ] `map()`
-* [ ] `filter()`
-* [ ] Additional list operations
-
-## Strings
-
-* [ ] Additional string operations
 
 ## 1.0 Quality
 
