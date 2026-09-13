@@ -132,22 +132,43 @@ def parse_value(value, expected_type):
 
 def arith(operation, a, b=None):
     var_a = get_var(a)
+    is_list_a = False
+    
     if var_a:
-        a = var_a["value"]
+        a_val = var_a["value"]
+        if var_a["type"] == "list":
+            is_list_a = True
+            a = a_val
+        else:
+            a = a_val
     else:
         try:
             a = float(a) if '.' in str(a) else int(a)
         except ValueError:
             pass
 
-    if not isinstance(a, (int, float)) or isinstance(a, bool):
-        raise TypeError("Arithmetic requires numbers.")
+    # Handle operations that operate on a single list first
+    if is_list_a:
+        if operation == "sum":
+            return sum(a)
+        elif operation == "max":
+            return max(a)
+        elif operation == "min":
+            return min(a)
+        else:
+            raise TypeError(f"Operation '{operation}' does not support list arguments.")
 
-    # Handle single-operand operations first
+    # Now we know 'a' must be a number
+    if not isinstance(a, (int, float)) or isinstance(a, bool):
+        raise TypeError(f"Arithmetic requires numbers. Got '{a}' instead.")
+
+    # Single-operand numeric operations
     if operation == "abs": 
         return abs(a)
+    elif operation == "round":
+        return round(a)
 
-    # For everything else, b is required
+    # For everything else, a second operand (b) is required
     if b is None:
         raise ValueError(f"Operation '{operation}' requires a second operand.")
 
@@ -163,6 +184,7 @@ def arith(operation, a, b=None):
     if not isinstance(b, (int, float)) or isinstance(b, bool):
         raise TypeError("Arithmetic requires numbers.")
 
+    # Two-operand numeric operations
     if operation == "add": return a + b
     elif operation == "sub": return a - b
     elif operation == "mul": return a * b
@@ -172,6 +194,8 @@ def arith(operation, a, b=None):
     elif operation == "mod":
         if b == 0: raise ZeroDivisionError("Cannot modulo by zero.")
         return a % b
+    elif operation == "max": return max(a, b)
+    elif operation == "min": return min(a, b)
     else:
         raise ValueError(f"Unknown arithmetic operation: {operation}")
 
@@ -261,13 +285,17 @@ def interpret(line):
     # arith
     # --------------------------------
     elif parts[0] == "arith":
-            if len(parts) == 3 and parts[1] == "abs":
-                result = arith(parts[1], parts[2])
-            elif len(parts) == 4 and parts[1] != "abs":
-                result = arith(parts[1], parts[2], parts[3])
-            else:
-                raise SyntaxError("Usage: arith abs <number> OR arith <operation> <number> <number>")
-            print(result)
+        single_ops = ["abs", "round", "sum"]
+        
+        # 'max' and 'min' can take 1 argument (a list) or 2 arguments (two numbers)
+        if len(parts) == 3 and parts[1] in single_ops + ["max", "min"]:
+            result = arith(parts[1], parts[2])
+        elif len(parts) == 4 and parts[1] not in single_ops:
+            result = arith(parts[1], parts[2], parts[3])
+        else:
+            raise SyntaxError("Usage: arith <abs|round|sum> <val> OR arith <op> <val1> <val2>")
+        
+        print(result)
 
     # --------------------------------
     # compare

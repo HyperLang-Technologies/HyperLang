@@ -10,6 +10,7 @@ define var name: string = "what is good"
 define var pi: float = 3.14
 define var cool: bool = true
 define var my_list: list = "['apple', 'banana', 'cherry']"
+define var num_list: list = "[10, 25, 5]"
 define var list_item: string = ""
 define var list_len: int = 0
 define var loop_flag: bool = true
@@ -23,8 +24,26 @@ arith add x y
 text output "Testing modulo (10 mod 3):"
 arith mod x 3
 
-text output "Testing abs with -10"
+text output "Testing abs with -10:"
 arith abs -10
+
+text output "Testing max of 10 and 5:"
+arith max x y
+
+text output "Testing min of 10 and 5:"
+arith min x y
+
+text output "Testing round of 3.14:"
+arith round pi
+
+text output "Testing sum of list [10, 25, 5]:"
+arith sum num_list
+
+text output "Testing max of list [10, 25, 5]:"
+arith max num_list
+
+text output "Testing min of list [10, 25, 5]:"
+arith min num_list
 
 # --------------------------------
 # Text Output

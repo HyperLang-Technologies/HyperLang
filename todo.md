@@ -24,10 +24,10 @@
 * [x] Arithmetic (`arith`)
 * [x] `mod` function
 * [x] `abs` function
-* [ ] `max()`
-* [ ] `min()`
-* [ ] `round()`
-* [ ] `sum()`
+* [x] `max()`
+* [x] `min()`
+* [x] `round()`
+* [x] `sum()`
 
 ## Input & Output
 
