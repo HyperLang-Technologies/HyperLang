@@ -1,4 +1,4 @@
-# HyperLang TODO — 1.0 Release
+# HyperLang TODO — 1.0.0 Release
 
 ## Core Language
 
@@ -26,6 +26,7 @@
 * [x] `min()`
 * [x] `round()`
 * [x] `sum()`
+Prolly did not need all of this rn, but who cares.
 
 ## Input & Output
 
@@ -39,17 +40,8 @@
 
 * [x] Lists
 
-## 1.0 Quality
+## HyperLang TODO — 1.0 Release
 
-* [ ] Complete syntax specification
-* [ ] Complete built-in function specification
-* [ ] Compiler/runtime error messages
-* [ ] Syntax validation
-* [ ] Test suite for core language features
-* [ ] Test suite for built-in functions
 * [ ] Example programs
-* [ ] 1.0 documentation
-* [ ] 1.0 changelog
-* [ ] Version system finalized
-* [ ] Final 1.0 release testing
+* [ ] 1.0.0 documentation
 * [ ] Release HyperLang 1.0
