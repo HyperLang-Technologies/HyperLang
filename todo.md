@@ -1,47 +1,98 @@
-# HyperLang TODO — 1.0.0 Release
+# HyperLang TODO — 1.1 Release
 
-## Core Language
+## Built-in Functions
 
-* [x] Variables
-* [x] Types
-* [x] Comments
-* [x] Functions
-* [x] `return`
-* [x] `globals`
-* [x] `locals`
-* [x] `if`, `else if`, `else`
-* [x] Comparisons
-* [x] For loops
-* [x] While loops
-* [x] Wait
-* [x] `break`
-* [x] `continue`
+### Basic Utilities
 
-## Arithmetic
+* [ ] `all()`
+* [ ] `any()`
+* [ ] `bool()`
+* [ ] `callable()`
+* [ ] `id()`
+* [ ] `len()`
+* [ ] `type()`
+* [ ] `vars()`
 
-* [x] Arithmetic (`arith`)
-* [x] `mod` function
-* [x] `abs` function
-* [x] `max()`
-* [x] `min()`
-* [x] `round()`
-* [x] `sum()`
-Prolly did not need all of this rn, but who cares.
+### Number & Math Functions
 
-## Input & Output
+* [ ] `bin()`
+* [ ] `divmod()`
+* [ ] `hex()`
+* [ ] `oct()`
+* [ ] `pow()`
 
-* [x] Text input/output
+### Type Conversion
 
-## Type Conversion
+* [ ] `float()`
+* [ ] `int()`
+* [ ] `str()`
+* [ ] `list()`
+* [ ] `set()`
+* [ ] `tuple()`
 
-* [x] Type conversion (`convert`)
+### Character & String Utilities
 
-## Lists & Collections
+* [ ] `ascii()`
+* [ ] `chr()`
+* [ ] `ord()`
+* [ ] `format()`
+* [ ] `repr()`
 
-* [x] Lists
+### Iteration & Collections
 
-## HyperLang TODO — 1.0 Release
+* [ ] `enumerate()`
+* [ ] `filter()`
+* [ ] `iter()`
+* [ ] `map()`
+* [ ] `next()`
+* [ ] `range()`
+* [ ] `reversed()`
+* [ ] `slice()`
+* [ ] `sorted()`
+* [ ] `zip()`
 
-* [ ] Example programs
-* [ ] 1.0.0 documentation
-* [ ] Release HyperLang 1.0
+### Collection Types
+
+* [ ] Dictionaries / maps
+* [ ] Sets
+* [ ] Tuples
+
+### Input & Output
+
+* [ ] `open()`
+
+### Object & Attribute Utilities
+
+* [ ] `getattr()`
+* [ ] `hasattr()`
+* [ ] `setattr()`
+
+### Byte & Binary Data
+
+* [ ] `bytes()`
+* [ ] `bytearray()`
+
+## Language Improvements
+
+* [ ] Better error messages
+* [ ] More consistent type checking
+* [ ] Better function argument handling
+* [ ] Improved collection handling
+* [ ] Improved string handling
+* [ ] Built-in function documentation
+* [ ] 1.1 example programs
+* [ ] 1.1 documentation
+* [ ] 1.1 regression testing
+
+## 1.1 Quality Checks
+
+* [ ] Verify every new built-in works with supported HyperLang types
+* [ ] Verify invalid arguments produce useful runtime errors
+* [ ] Verify built-ins do not unexpectedly modify user data
+* [ ] Verify built-ins work inside functions and loops
+* [ ] Verify built-ins work together
+* [ ] Test large and empty collections
+* [ ] Test invalid type conversions
+* [ ] Test edge cases for numeric functions
+* [ ] Test nested function calls
+* [ ] Test built-ins with user-defined functions
