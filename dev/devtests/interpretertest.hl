@@ -32,7 +32,6 @@ define var my_tuple: tuple = "('red', 'green', 'blue')"
 define var tuple_item: string = ""
 define var raw_bytes: bytes = "hello"
 define var raw_barray: bytearray = "world"
-define var file_handle: file = "temp.txt"
 define var attr_has: bool = false
 define var attr_val: string = ""
 
