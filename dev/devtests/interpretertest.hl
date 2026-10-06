@@ -45,6 +45,22 @@ arith max num_list
 text output "Testing min of list [10, 25, 5]:"
 arith min num_list
 
+# --- New Math & Number Functions ---
+text output "Testing bin of 10:"
+arith bin x
+
+text output "Testing hex of 255:"
+arith hex 255
+
+text output "Testing oct of 64:"
+arith oct 64
+
+text output "Testing pow of 10^5:"
+arith pow x y
+
+text output "Testing divmod of 10 and 3:"
+arith divmod x 3
+
 # --------------------------------
 # Text Output
 # --------------------------------

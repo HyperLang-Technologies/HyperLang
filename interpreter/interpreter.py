@@ -167,6 +167,18 @@ def arith(operation, a, b=None):
         return abs(a)
     elif operation == "round":
         return round(a)
+    elif operation == "bin":
+        if not isinstance(a, int):
+            raise TypeError("bin() requires an integer.")
+        return bin(a)
+    elif operation == "hex":
+        if not isinstance(a, int):
+            raise TypeError("hex() requires an integer.")
+        return hex(a)
+    elif operation == "oct":
+        if not isinstance(a, int):
+            raise TypeError("oct() requires an integer.")
+        return oct(a)
 
     if b is None:
         raise ValueError(f"Operation '{operation}' requires a second operand.")
@@ -194,6 +206,10 @@ def arith(operation, a, b=None):
         return a % b
     elif operation == "max": return max(a, b)
     elif operation == "min": return min(a, b)
+    elif operation == "pow": return pow(a, b)
+    elif operation == "divmod":
+        if b == 0: raise ZeroDivisionError("Cannot divide by zero.")
+        return list(divmod(a, b))
     else:
         raise ValueError(f"Unknown arithmetic operation: {operation}")
 
@@ -283,14 +299,14 @@ def interpret(line):
     # arith
     # --------------------------------
     elif parts[0] == "arith":
-        single_ops = ["abs", "round", "sum"]
+        single_ops = ["abs", "round", "sum", "bin", "hex", "oct"]
         
         if len(parts) == 3 and parts[1] in single_ops + ["max", "min"]:
             result = arith(parts[1], parts[2])
         elif len(parts) == 4 and parts[1] not in single_ops:
             result = arith(parts[1], parts[2], parts[3])
         else:
-            raise SyntaxError("Usage: arith <abs|round|sum> <val> OR arith <op> <val1> <val2>")
+            raise SyntaxError("Usage: arith <abs|round|sum|bin|hex|oct> <val> OR arith <op> <val1> <val2>")
         
         print(result)
 
