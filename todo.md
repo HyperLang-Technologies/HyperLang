@@ -23,12 +23,12 @@
 
 ### Type Conversion
 
-* [ ] `float()`
-* [ ] `int()`
-* [ ] `str()`
-* [ ] `list()`
-* [ ] `set()`
-* [ ] `tuple()`
+* [x] `float()` (via `convert <var> to float`)
+* [x] `int()` (via `convert <var> to int`)
+* [x] `str()` (via `convert <var> to string`)
+* [x] `list()` (via `convert <var> to list`)
+* [x] `set()` (via `convert <var> to set`)
+* [x] `tuple()` (via `convert <var> to tuple`)
 
 ### Character & String Utilities
 
@@ -53,46 +53,46 @@
 
 ### Collection Types
 
-* [ ] Dictionaries / maps
-* [ ] Sets
-* [ ] Tuples
+* [x] Dictionaries / maps
+* [x] Sets
+* [x] Tuples
 
 ### Input & Output
 
-* [ ] `open()`
+* [x] `open()`
 
 ### Object & Attribute Utilities
 
-* [ ] `getattr()`
-* [ ] `hasattr()`
-* [ ] `setattr()`
+* [x] `getattr()`
+* [x] `hasattr()`
+* [x] `setattr()`
 
 ### Byte & Binary Data
 
-* [ ] `bytes()`
-* [ ] `bytearray()`
+* [x] `bytes()`
+* [x] `bytearray()`
 
 ## Language Improvements
 
 * [ ] Better error messages
-* [ ] More consistent type checking
+* [x] More consistent type checking
 * [ ] Better function argument handling
-* [ ] Improved collection handling
+* [x] Improved collection handling
 * [ ] Improved string handling
 * [ ] Built-in function documentation
 * [ ] 1.1 example programs
 * [ ] 1.1 documentation
-* [ ] 1.1 regression testing
+* [x] 1.1 regression testing
 
 ## 1.1 Quality Checks
 
-* [ ] Verify every new built-in works with supported HyperLang types
-* [ ] Verify invalid arguments produce useful runtime errors
-* [ ] Verify built-ins do not unexpectedly modify user data
-* [ ] Verify built-ins work inside functions and loops
-* [ ] Verify built-ins work together
+* [x] Verify every new built-in works with supported HyperLang types
+* [x] Verify invalid arguments produce useful runtime errors
+* [x] Verify built-ins do not unexpectedly modify user data
+* [x] Verify built-ins work inside functions and loops
+* [x] Verify built-ins work together
 * [ ] Test large and empty collections
 * [ ] Test invalid type conversions
 * [ ] Test edge cases for numeric functions
 * [ ] Test nested function calls
-* [ ] Test built-ins with user-defined functions
+* [x] Test built-ins with user-defined functions

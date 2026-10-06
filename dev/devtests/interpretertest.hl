@@ -24,6 +24,18 @@ define var str_type: string = ""
 define var val_len: int = 0
 define var memory_id: int = 0
 
+# Variables for Collections, I/O, Bytes, and Attributes
+define var my_dict: dict = "{'lang': 'HyperLang', 'version': 2026}"
+define var dict_val: string = ""
+define var my_set: set = "['alpha', 'beta']"
+define var my_tuple: tuple = "('red', 'green', 'blue')"
+define var tuple_item: string = ""
+define var raw_bytes: bytes = "hello"
+define var raw_barray: bytearray = "world"
+define var file_handle: file = "temp.txt"
+define var attr_has: bool = false
+define var attr_val: string = ""
+
 # --------------------------------
 # Arithmetic Operations
 # --------------------------------
@@ -79,29 +91,85 @@ text output pi
 text output cool
 
 # --------------------------------
-# List Operations
+# List & Collection Operations
 # --------------------------------
-# Append a new item to the list
 list append my_list "dragonfruit"
-
-# Get the item at index 1 ("banana") into list_item and print it
 list get my_list 1 list_item
 text output list_item
 
-# Get the length of my_list (4) into list_len and print it
 list len my_list list_len
 text output list_len
+
+# --- New Collections: Dict, Set, Tuple ---
+text output "--- Starting Dictionary, Set, & Tuple tests ---"
+
+dict get my_dict "lang" dict_val
+text output "dict get my_dict['lang'] (should be HyperLang):"
+text output dict_val
+
+dict set my_dict "status" "awesome"
+dict get my_dict "status" dict_val
+text output "dict get my_dict['status'] after dict set:"
+text output dict_val
+
+set add my_set "gamma"
+len my_set val_len
+text output "len(my_set) after adding 'gamma' (should be 3):"
+text output val_len
+
+tuple get my_tuple 0 tuple_item
+text output "tuple get my_tuple[0] (should be red):"
+text output tuple_item
+
+# --------------------------------
+# Testing Bytes & Bytearray
+# --------------------------------
+text output "--- Starting Bytes and Bytearray tests ---"
+bytes "hyper" raw_bytes
+type raw_bytes str_type
+text output "Type of raw_bytes:"
+text output str_type
+
+bytearray "lang" raw_barray
+type raw_barray str_type
+text output "Type of raw_barray:"
+text output str_type
+
+# --------------------------------
+# Testing Object & Attribute Utilities
+# --------------------------------
+text output "--- Starting Object & Attribute Utility tests ---"
+
+hasattr my_dict "lang" attr_has
+text output "hasattr(my_dict, 'lang') (should be true):"
+text output attr_has
+
+getattr my_dict "lang" attr_val
+text output "getattr(my_dict, 'lang') (should be HyperLang):"
+text output attr_val
+
+setattr my_dict "author" "HyperLang Team"
+getattr my_dict "author" attr_val
+text output "getattr(my_dict, 'author') after setattr:"
+text output attr_val
+
+# --------------------------------
+# Testing File I/O (open)
+# --------------------------------
+text output "--- Starting File I/O (open) tests ---"
+open "temp_test.txt" "w" file_handle
+type file_handle str_type
+text output "Type of file_handle after open():"
+text output str_type
 
 # --------------------------------
 # Loop Operations
 # --------------------------------
-# Test 'loop for' (runs 3 times)
 text output "Testing loop for:"
 loop for 3
     text output "Looping!"
 endloop
 
-# Test 'loop while' using a boolean variable
 text output "Testing loop while:"
 loop while loop_flag
     text output "Inside while loop"
@@ -127,10 +195,7 @@ define var a: int = 10
 define var b: int = 20
 define var is_less: bool = false
 
-# Check if a is less than b, and store the result in is_less
 compare a < b is_less
-
-# This should output True
 text output "Is 10 < 20?"
 text output is_less
 
@@ -176,12 +241,11 @@ convert bool_val to string
 text output bool_val
 
 # --------------------------------
-# Testing New Built-in Functions
+# Testing Built-in Functions
 # --------------------------------
-text output "--- Starting new built-in function tests ---"
+text output "--- Starting built-in function tests ---"
 
 # 1. Testing all()
-text output "Testing all():"
 all truthy_list res_bool
 text output "all([1, 2, 3]) (should be true):"
 text output res_bool
@@ -191,7 +255,6 @@ text output "all([0, 1, 0]) (should be false):"
 text output res_bool
 
 # 2. Testing any()
-text output "Testing any():"
 any mixed_list res_bool
 text output "any([0, 1, 0]) (should be true):"
 text output res_bool
@@ -201,7 +264,6 @@ text output "any([0, 0, 0]) (should be false):"
 text output res_bool
 
 # 3. Testing bool()
-text output "Testing bool():"
 bool x res_bool
 text output "bool(10) (should be true):"
 text output res_bool
@@ -211,7 +273,6 @@ text output "bool(0) (should be false):"
 text output res_bool
 
 # 4. Testing callable()
-text output "Testing callable():"
 callable test_function res_bool
 text output "callable('test_function') (should be true):"
 text output res_bool
@@ -221,13 +282,11 @@ text output "callable('non_existent_func') (should be false):"
 text output res_bool
 
 # 5. Testing id()
-text output "Testing id():"
 id x memory_id
 text output "id(x) integer representation:"
 text output memory_id
 
 # 6. Testing len()
-text output "Testing len():"
 len name val_len
 text output "len('what is good') (should be 12):"
 text output val_len
@@ -237,7 +296,6 @@ text output "len(my_list) (should be 4):"
 text output val_len
 
 # 7. Testing type()
-text output "Testing type():"
 type pi str_type
 text output "type(pi) (should be float):"
 text output str_type
