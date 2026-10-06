@@ -15,11 +15,11 @@
 
 ### Number & Math Functions
 
-* [ ] `bin()`
-* [ ] `divmod()`
-* [ ] `hex()`
-* [ ] `oct()`
-* [ ] `pow()`
+* [x] `bin()`
+* [x] `divmod()`
+* [x] `hex()`
+* [x] `oct()`
+* [x] `pow()`
 
 ### Type Conversion
 
