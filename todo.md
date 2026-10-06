@@ -4,14 +4,14 @@
 
 ### Basic Utilities
 
-* [ ] `all()`
-* [ ] `any()`
-* [ ] `bool()`
-* [ ] `callable()`
-* [ ] `id()`
-* [ ] `len()`
-* [ ] `type()`
-* [ ] `vars()`
+* [x] `all()`
+* [x] `any()`
+* [x] `bool()`
+* [x] `callable()`
+* [x] `id()`
+* [x] `len()`
+* [x] `type()`
+* [x] `vars()`
 
 ### Number & Math Functions
 

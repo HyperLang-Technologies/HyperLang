@@ -15,6 +15,15 @@ define var list_item: string = ""
 define var list_len: int = 0
 define var loop_flag: bool = true
 
+# Auxiliary variables for new built-in function tests
+define var truthy_list: list = "[1, 2, 3]"
+define var mixed_list: list = "[0, 1, 0]"
+define var falsy_list: list = "[0, 0, 0]"
+define var res_bool: bool = false
+define var str_type: string = ""
+define var val_len: int = 0
+define var memory_id: int = 0
+
 # --------------------------------
 # Arithmetic Operations
 # --------------------------------
@@ -167,6 +176,81 @@ convert bool_val to string
 text output bool_val
 
 # --------------------------------
+# Testing New Built-in Functions
+# --------------------------------
+text output "--- Starting new built-in function tests ---"
+
+# 1. Testing all()
+text output "Testing all():"
+all truthy_list res_bool
+text output "all([1, 2, 3]) (should be true):"
+text output res_bool
+
+all mixed_list res_bool
+text output "all([0, 1, 0]) (should be false):"
+text output res_bool
+
+# 2. Testing any()
+text output "Testing any():"
+any mixed_list res_bool
+text output "any([0, 1, 0]) (should be true):"
+text output res_bool
+
+any falsy_list res_bool
+text output "any([0, 0, 0]) (should be false):"
+text output res_bool
+
+# 3. Testing bool()
+text output "Testing bool():"
+bool x res_bool
+text output "bool(10) (should be true):"
+text output res_bool
+
+bool 0 res_bool
+text output "bool(0) (should be false):"
+text output res_bool
+
+# 4. Testing callable()
+text output "Testing callable():"
+callable test_function res_bool
+text output "callable('test_function') (should be true):"
+text output res_bool
+
+callable non_existent_func res_bool
+text output "callable('non_existent_func') (should be false):"
+text output res_bool
+
+# 5. Testing id()
+text output "Testing id():"
+id x memory_id
+text output "id(x) integer representation:"
+text output memory_id
+
+# 6. Testing len()
+text output "Testing len():"
+len name val_len
+text output "len('what is good') (should be 12):"
+text output val_len
+
+len my_list val_len
+text output "len(my_list) (should be 4):"
+text output val_len
+
+# 7. Testing type()
+text output "Testing type():"
+type pi str_type
+text output "type(pi) (should be float):"
+text output str_type
+
+type my_list str_type
+text output "type(my_list) (should be list):"
+text output str_type
+
+# 8. Testing vars()
+text output "Testing vars():"
+vars
+
+# --------------------------------
 # Testing Return Operations
 # --------------------------------
 text output "--- Starting return tests ---"
@@ -199,6 +283,8 @@ func define scope_tester
     define var scope_test_var: int = 500
     text output "Local scope_test_var is:"
     text output scope_test_var
+    text output "Printing vars inside local function scope:"
+    vars
 endfunc
 
 text output "Global scope_test_var before function:"
@@ -208,7 +294,6 @@ func call scope_tester
 
 text output "Global scope_test_var after function (should still be 100):"
 text output scope_test_var
-
 
 # --------------------------------
 # Testing Wait, Break, and Continue
