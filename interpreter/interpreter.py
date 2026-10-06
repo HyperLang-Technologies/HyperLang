@@ -458,6 +458,109 @@ def interpret(line):
         
         time.sleep(sec)
 
+    # --------------------------------
+    # Built-in Inspection & Utility Functions
+    # --------------------------------
+    elif parts[0] in ("all", "any"):
+        if len(parts) != 3:
+            raise SyntaxError(f"Usage: {parts[0]} <list_var> <dest_bool_var>")
+        
+        list_var, dest_var = parts[1], parts[2]
+        lst_data = get_var(list_var)
+        if not lst_data or lst_data["type"] != "list":
+            raise TypeError(f"Variable '{list_var}' must be a defined list.")
+            
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "bool":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined boolean.")
+
+        res = all(lst_data["value"]) if parts[0] == "all" else any(lst_data["value"])
+        update_var(dest_var, "bool", res)
+
+    elif parts[0] == "bool":
+        if len(parts) != 3:
+            raise SyntaxError("Usage: bool <val_or_var> <dest_bool_var>")
+            
+        val_str, dest_var = parts[1], parts[2]
+        var_data = get_var(val_str)
+        val = var_data["value"] if var_data else evaluate_condition(val_str)
+
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "bool":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined boolean.")
+
+        update_var(dest_var, "bool", bool(val))
+
+    elif parts[0] == "callable":
+        if len(parts) != 3:
+            raise SyntaxError("Usage: callable <func_name> <dest_bool_var>")
+            
+        target_func, dest_var = parts[1], parts[2]
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "bool":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined boolean.")
+
+        is_callable = target_func in functions
+        update_var(dest_var, "bool", is_callable)
+
+    elif parts[0] == "id":
+        if len(parts) != 3:
+            raise SyntaxError("Usage: id <var_name> <dest_int_var>")
+            
+        var_name, dest_var = parts[1], parts[2]
+        var_data = get_var(var_name)
+        if not var_data:
+            raise ValueError(f"Variable '{var_name}' is not defined.")
+
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "int":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined integer.")
+
+        update_var(dest_var, "int", id(var_data["value"]))
+
+    elif parts[0] == "len":
+        if len(parts) != 3:
+            raise SyntaxError("Usage: len <list_or_string_var> <dest_int_var>")
+            
+        target_var, dest_var = parts[1], parts[2]
+        var_data = get_var(target_var)
+        if not var_data or var_data["type"] not in ("list", "string"):
+            raise TypeError(f"Variable '{target_var}' must be a list or string.")
+
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "int":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined integer.")
+
+        update_var(dest_var, "int", len(var_data["value"]))
+
+    elif parts[0] == "type":
+        if len(parts) != 3:
+            raise SyntaxError("Usage: type <var_name> <dest_string_var>")
+            
+        var_name, dest_var = parts[1], parts[2]
+        var_data = get_var(var_name)
+        if not var_data:
+            raise ValueError(f"Variable '{var_name}' is not defined.")
+
+        dest_data = get_var(dest_var)
+        if not dest_data or dest_data["type"] != "string":
+            raise TypeError(f"Destination variable '{dest_var}' must be a defined string.")
+
+        update_var(dest_var, "string", var_data["type"])
+
+    elif parts[0] == "vars":
+        merged_vars = {}
+        # Traverse stack from global (0) to local (-1) so local overrides global
+        for scope in call_stack:
+            merged_vars.update(scope)
+
+        print("--- Active Scope Variables ---")
+        for k, v in merged_vars.items():
+            print(f"{k}: {v['type']} = {v['value']}")
+        print("--- Defined Functions ---")
+        for fn in functions:
+            print(f"func {fn}")
+
     else:
         raise SyntaxError(f"Unknown command: {parts[0]}")
 
