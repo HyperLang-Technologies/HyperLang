@@ -1,4 +1,4 @@
-# HyperLang Tests
+# HyperLang 1.1 Interpreter Regression Program
 # Copyleft 🄯 2026 HyperLang Technologies
 
 # --------------------------------
@@ -9,26 +9,26 @@ define var y: int = 5
 define var name: string = "what is good"
 define var pi: float = 3.14
 define var cool: bool = true
-define var my_list: list = "['apple', 'banana', 'cherry']"
-define var num_list: list = "[10, 25, 5]"
+define var my_list: list = ['apple', 'banana', 'cherry']
+define var num_list: list = [10, 25, 5]
 define var list_item: string = ""
 define var list_len: int = 0
 define var loop_flag: bool = true
 
 # Auxiliary variables for new built-in function tests
-define var truthy_list: list = "[1, 2, 3]"
-define var mixed_list: list = "[0, 1, 0]"
-define var falsy_list: list = "[0, 0, 0]"
+define var truthy_list: list = [1, 2, 3]
+define var mixed_list: list = [0, 1, 0]
+define var falsy_list: list = [0, 0, 0]
 define var res_bool: bool = false
 define var str_type: string = ""
 define var val_len: int = 0
 define var memory_id: int = 0
 
 # Variables for Collections, I/O, Bytes, and Attributes
-define var my_dict: dict = "{'lang': 'HyperLang', 'version': 2026}"
+define var my_dict: dict = {'lang': 'HyperLang', 'version': 2026}
 define var dict_val: string = ""
-define var my_set: set = "['alpha', 'beta']"
-define var my_tuple: tuple = "('red', 'green', 'blue')"
+define var my_set: set = {'alpha', 'beta'}
+define var my_tuple: tuple = ('red', 'green', 'blue')
 define var tuple_item: string = ""
 define var raw_bytes: bytes = "hello"
 define var raw_barray: bytearray = "world"
@@ -156,7 +156,7 @@ text output attr_val
 # Testing File I/O (open)
 # --------------------------------
 text output "--- Starting File I/O (open) tests ---"
-open "temp_test.txt" "w" file_handle
+open "tests/interpreter_regression.tmp" "w" file_handle
 type file_handle str_type
 text output "Type of file_handle after open():"
 text output str_type

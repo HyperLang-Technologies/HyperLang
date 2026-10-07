@@ -1,0 +1,12 @@
+# Build a sequence, transform it, and inspect the result.
+define var values: list = [8, 3, 5, 2]
+define var ordered: list = []
+define var selected: list = []
+
+sorted values ordered
+slice ordered 1 3 selected
+text output "Sorted values:"
+text output ordered
+text output "Middle values:"
+text output selected
+arith sum ordered

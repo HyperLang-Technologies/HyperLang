@@ -1,4 +1,4 @@
-py dev/devtools/deletepycache.py
+py tools/deletepycache.py
 git add .
 echo "Enter commit message: "
 read commit_message

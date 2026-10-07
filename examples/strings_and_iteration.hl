@@ -1,0 +1,17 @@
+# Character helpers and iterators work with HyperLang variables.
+define var codepoint: int = 9731
+define var symbol: string = ""
+define var symbol_code: int = 0
+
+chr codepoint symbol
+ord symbol symbol_code
+text output "Character:"
+text output symbol
+text output "Code point:"
+text output symbol_code
+
+define var values: list = [4, 1, 3, 2]
+define var positions: list = []
+enumerate values positions 1
+text output "One-based positions:"
+text output positions

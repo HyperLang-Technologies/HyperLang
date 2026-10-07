@@ -1,0 +1,12 @@
+# Functions can receive arguments and return a value.
+func define is_positive value
+    define var result: bool = false
+    compare value > 0 result
+    return result
+endfunc
+
+define var values: list = [-2, 0, 3, 7]
+define var positives: list = []
+filter is_positive values positives
+text output "Positive values:"
+text output positives
