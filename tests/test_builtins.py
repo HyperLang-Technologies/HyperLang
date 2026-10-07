@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from hyperlang_runtime.interpreter import Runtime, execute_lines, run_file
+from lang.interpreter import Runtime, execute_lines, run_file
 
 
 class BuiltinCommandTests(unittest.TestCase):

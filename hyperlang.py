@@ -3,7 +3,7 @@
 
 import sys
 
-from hyperlang_runtime.interpreter import run_file
+from lang.interpreter import run_file
 
 
 def main():
