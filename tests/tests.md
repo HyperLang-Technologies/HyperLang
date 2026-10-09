@@ -1,6 +1,6 @@
-# HyperLang User Tests
+﻿# YubaLANG User Tests
 
-These tests verify that the core HyperLang 1.0 features work from the perspective of someone learning the language for the first time.
+These tests verify that the core YubaLANG 1.0 features work from the perspective of someone learning the language for the first time.
 
 ---
 
@@ -298,13 +298,13 @@ text output name
 Enter:
 
 ```text
-HyperLang
+YubaLANG
 ```
 
 Expected output:
 
 ```text
-HyperLang
+YubaLANG
 ```
 
 ---
@@ -382,7 +382,7 @@ Expected: an unknown-command error.
 
 # New User Acceptance Criteria
 
-HyperLang passes the new-user test set when:
+YubaLANG passes the new-user test set when:
 
 * Basic programs execute successfully.
 * Variables work for all supported types.

@@ -1,8 +1,8 @@
-# HyperLang TODO — 1.2 Release
+﻿# YubaLANG TODO — 1.2 Release
 
 ## Release focus
 
-Make HyperLang easier to install, learn, share, and validate while keeping the
+Make YubaLANG easier to install, learn, share, and validate while keeping the
 toolchain lightweight. Prefer small, interoperable features over infrastructure
 that would be expensive to maintain before the user base grows.
 
@@ -45,7 +45,7 @@ item before its dependencies are understood.
 
 ### Official formatter
 
-- [ ] Specify a consistent formatting style for HyperLang source files.
+- [ ] Specify a consistent formatting style for YubaLANG source files.
 - [ ] Implement a formatter with a check mode and a write mode.
 - [ ] Keep formatting stable and avoid changing program semantics.
 - [ ] Add formatter fixtures covering comments, strings, collections,
@@ -55,7 +55,7 @@ item before its dependencies are understood.
 ## 2. Package management and dependency locking
 
 - [ ] Choose and document a standard project manifest format and required
-  metadata (project name, version, entry point, and HyperLang compatibility).
+  metadata (project name, version, entry point, and YubaLANG compatibility).
 - [ ] Define a deterministic lockfile format and when it must be generated or
   updated.
 - [ ] Resolve local relative-path dependencies.
@@ -101,7 +101,7 @@ item before its dependencies are understood.
 - [ ] Define safe ownership, lifetime, and error-handling rules for values
   crossing the boundary.
 - [ ] Implement a minimal binding path for calling a small C function from
-  HyperLang.
+  YubaLANG.
 - [ ] Add a small portable example and tests for successful calls, invalid
   signatures, and error propagation.
 - [ ] Document platform/compiler requirements and clearly state unsupported

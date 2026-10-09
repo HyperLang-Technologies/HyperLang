@@ -1,4 +1,4 @@
-# Character helpers and iterators work with HyperLang variables.
+﻿# Character helpers and iterators work with YubaLANG variables.
 define var codepoint: int = 9731
 define var symbol: string = ""
 define var symbol_code: int = 0

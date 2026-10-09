@@ -1,1 +1,1 @@
-"""HyperLang interpreter package."""
+﻿"""YubaLANG interpreter package."""

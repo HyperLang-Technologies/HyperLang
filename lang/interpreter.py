@@ -1,4 +1,4 @@
-"""Source loading and control-flow execution for HyperLang."""
+﻿"""Source loading and control-flow execution for YubaLANG."""
 
 import shlex
 import sys
@@ -229,4 +229,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         run_file(sys.argv[1])
     else:
-        print("Usage: py hyperlang.py <path_to_file.hl>")
+        print("Usage: py YubaLANG.py <path_to_file.hl>")

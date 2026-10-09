@@ -1,4 +1,4 @@
-# HyperLang Example Programs
+﻿# YubaLANG Example Programs
 
 ## hello.hl
 
@@ -11,7 +11,7 @@ text output "Hello, world!"
 ## variables.hl
 
 ```hl
-define var name: string = "HyperLang"
+define var name: string = "YubaLANG"
 define var version: float = 1.0
 define var active: bool = true
 
@@ -82,7 +82,7 @@ endif
 
 ```hl
 func define greet
-    text output "Hello from HyperLang!"
+    text output "Hello from YubaLANG!"
 endfunc
 
 func call greet
@@ -130,7 +130,7 @@ text output number
 ## complete.hl
 
 ```hl
-define var language: string = "HyperLang"
+define var language: string = "YubaLANG"
 define var numbers: list = [10, 20, 30]
 
 text output "Language:"

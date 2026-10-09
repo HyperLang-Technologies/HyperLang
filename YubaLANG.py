@@ -1,5 +1,5 @@
-# HyperLang Executable
-# Copyleft 🄯 2026 HyperLang Tecnhologies\
+﻿# YubaLANG Executable
+# Copyleft 🄯 2026 YubaLANG Tecnhologies\
 
 import sys
 
@@ -8,7 +8,7 @@ from lang.interpreter import run_file
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python hyperlang.py <file.hl>")
+        print("Usage: python YubaLANG.py <file.hl>")
         sys.exit(1)
 
     filename = sys.argv[1]

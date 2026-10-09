@@ -1,7 +1,7 @@
-# HyperLang Built-in Functions
+﻿# YubaLANG Built-in Functions
 
 Built-ins use command syntax. Unless stated otherwise, the destination variable
-must already exist and have the matching HyperLang type.
+must already exist and have the matching YubaLANG type.
 
 ## Character and string functions
 

@@ -1,14 +1,14 @@
-# HyperLang Tools
-# Copyleft 🄯 2026 HyperLang Technologies
+﻿# YubaLANG Tools
+# Copyleft 🄯 2026 YubaLANG Technologies
 
 import shutil
 from pathlib import Path
 
 def clean_pycache():
-    # Gets the directory where this script is located (HyperLang/tools)
+    # Gets the directory where this script is located (YubaLANG/tools)
     script_dir = Path(__file__).resolve().parent
     
-    # Gets the parent directory (HyperLang)
+    # Gets the parent directory (YubaLANG)
     root_dir = script_dir.parent
     
     print(f"Scanning for __pycache__ folders in: {root_dir}\n")
